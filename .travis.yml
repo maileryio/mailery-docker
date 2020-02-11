@@ -1,0 +1,41 @@
+language: bash
+services: docker
+
+env:
+  global:
+    - GITHUB_API_TOKEN: ''
+    - TEST_VERSION: 'master'
+    - PHP_IMAGE_NAME: 'mailery/php'
+  jobs:
+    - DOCKERFILE_FLAVOUR=debian PHP_BASE_IMAGE_VERSION=7.4-fpm
+
+before_install:
+  - if [ -n "$TRAVIS_TAG" ]; then export PHP_IMAGE_VERSION_SUFFIX=-${TRAVIS_TAG}; fi
+
+install:
+  - git clone https://github.com/maileryio/mailery _host-volumes/app
+  - pushd _host-volumes/app && git checkout ${TEST_VERSION} && popd
+
+before_script:
+  - pwd
+  - docker version
+  - docker info
+  - docker-compose version
+
+script:
+  - echo "travis_fold:start:BUILD folding starts"
+  - docker-compose build
+  - echo "travis_fold:end:BUILD folding ends"
+  - docker-compose run --rm php php -v
+  - docker-compose run --rm php yarn -v
+  - docker-compose run --rm -w /app php composer install
+  # TODO: install and test "core" packages
+
+after_script:
+  - docker images
+
+#after_success:
+#  - if [[ $TRAVIS_BRANCH = "master" || -n "$TRAVIS_TAG" ]]; then
+#      echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin  &&
+#      docker-compose push;
+#    fi
