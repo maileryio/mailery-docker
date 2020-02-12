@@ -1,5 +1,11 @@
 version: '2'
 
+networks:
+  dbnet:
+    external: false
+  appnet:
+    external: true
+
 services:
   php:
     build:
@@ -12,8 +18,13 @@ services:
       - GITHUB_API_TOKEN=${GITHUB_API_TOKEN}
       - PHP_ENABLE_XDEBUG
       - TEST_RUNTIME_PATH=/tmp/runtime
+    ports:
+      - "9000:9000"
     volumes:
       # Application volume
       - ./_host-volumes/app:/app:delegated
       # Composer cache
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
+    networks:
+      - dbnet
+      - appnet

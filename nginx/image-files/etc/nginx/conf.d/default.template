@@ -1,0 +1,91 @@
+geo $maintenance
+{
+    default yes;
+}
+
+map $uri $redirect_uri {
+    default "none";
+    include /etc/nginx/conf.d/includes/redirect-map.conf;
+}
+
+upstream php-fpm {
+    server ${FASTCGI_PASS_HOST}:${FASTCGI_PASS_PORT} weight=10;
+}
+
+server {
+    server_name "~^www\.(.*)$";
+    return 301 $scheme://$1$request_uri;
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    server_name ${WEB_HOST_NAME};
+    root /app/web;
+    index index.php;
+
+    charset utf-8;
+
+    gzip on;
+    gzip_types text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/bmp application/java application/msword application/vnd.ms-fontobject application/x-msdownload image/x-icon image/webp application/json application/vnd.ms-access application/vnd.ms-project application/x-font-otf application/vnd.ms-opentype application/vnd.oasis.opendocument.database application/vnd.oasis.opendocument.chart application/vnd.oasis.opendocument.formula application/vnd.oasis.opendocument.graphics application/vnd.oasis.opendocument.spreadsheet application/vnd.oasis.opendocument.text audio/ogg application/pdf application/vnd.ms-powerpoint application/x-shockwave-flash image/tiff application/x-font-ttf audio/wav application/vnd.ms-write application/font-woff application/font-woff2 application/vnd.ms-excel;
+
+    error_page 500 502 503 504 /50x.html;
+
+    access_log  /app/runtime/host.access.log;
+    error_log   /app/runtime/host.error.log;
+
+    add_header Referrer-Policy "origin-when-cross-origin";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    location / {
+        include /etc/nginx/conf.d/maintenance/*.conf;
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        location ~ ^/(?!(index.php)) {
+            return 404;
+        }
+
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_index index.php;
+        fastcgi_pass php-fpm;
+        fastcgi_connect_timeout 30s;
+        fastcgi_read_timeout 30s;
+        fastcgi_send_timeout 60s;
+        fastcgi_ignore_client_abort on;
+        fastcgi_pass_header "X-Accel-Expires";
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param  PATH_INFO        $fastcgi_path_info;
+        fastcgi_param  HTTP_REFERER     $http_referer;
+        include fastcgi_params;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|swf|ico|eot|woff|woff2|ttf|svg)$ {
+        expires max;
+        access_log off;
+    }
+
+    location = /favicon.ico {
+        access_log off;
+        expires max;
+    }
+
+    location = /robots.txt {
+        access_log off;
+    }
+
+    location ~* /\. {
+        deny all;
+    }
+
+    location ~* /(?:assets)/.*\.php$ {
+        deny all;
+    }
+
+    location = /50x.html {
+       root /etc/nginx/error;
+    }
+}

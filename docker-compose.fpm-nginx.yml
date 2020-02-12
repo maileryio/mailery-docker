@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  nginx:
+    build:
+      dockerfile: Dockerfile-${DOCKERFILE_FLAVOUR}
+      context: 'nginx'
+      args:
+        - NGINX_BASE_IMAGE_VERSION=${NGINX_BASE_IMAGE_VERSION}
+    image: ${NGINX_IMAGE_NAME}:${NGINX_BASE_IMAGE_VERSION}${NGINX_IMAGE_VERSION_SUFFIX}
+    depends_on:
+      - php
+    environment:
+      - FASTCGI_PASS_HOST=php
+      - FASTCGI_PASS_PORT=9000
+      - WEB_HOST_NAME
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Application volume
+      - ./_host-volumes/app/web:/app/web:delegated
+      # logs volume
+      - ./_host-volumes/app/runtime:/app/runtime:delegated
+    command: >
+      /bin/bash -c "
+      envsubst '$$FASTCGI_PASS_HOST, $$FASTCGI_PASS_PORT, $$WEB_HOST_NAME' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf
+      && nginx -g 'daemon off;'"
+    networks:
+      appnet:
+        aliases:
+          - ${WEB_HOST_NAME}

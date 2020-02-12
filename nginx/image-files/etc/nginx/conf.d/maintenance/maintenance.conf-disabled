@@ -1,0 +1,3 @@
+if ($maintenance = yes) {
+    return 503;
+}
