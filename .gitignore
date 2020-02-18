@@ -17,6 +17,3 @@ Thumbs.db
 
 # local config
 .env
-
-# Application volumes
-.postgres
