@@ -19,4 +19,4 @@ Thumbs.db
 .env
 
 # Application volumes
-.volumes
+.postgres
