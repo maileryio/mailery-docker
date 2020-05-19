@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  redis:
+    build:
+      dockerfile: Dockerfile-${DOCKERFILE_FLAVOUR}
+      context: 'redis'
+      args:
+        - REDIS_BASE_IMAGE_VERSION=${REDIS_BASE_IMAGE_VERSION}
+    image: ${REDIS_IMAGE_NAME}:${REDIS_BASE_IMAGE_VERSION}${REDIS_IMAGE_VERSION_SUFFIX}
+    volumes:
+      - ./_db-volumes/redis:/data
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    networks:
+      - redisnet

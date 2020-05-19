@@ -1,10 +1,12 @@
 version: '2'
 
 networks:
-  dbnet:
-    external: false
   appnet:
     external: true
+  dbnet:
+    external: false
+  redisnet:
+    external: false
 
 services:
   php:
@@ -26,5 +28,6 @@ services:
       # Composer cache
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
     networks:
-      - dbnet
       - appnet
+      - dbnet
+      - redisnet

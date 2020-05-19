@@ -1,0 +1,5 @@
+# Redis Docker image for Mailery runtime
+# ==============================================
+
+ARG REDIS_BASE_IMAGE_VERSION
+FROM redis:${REDIS_BASE_IMAGE_VERSION}
