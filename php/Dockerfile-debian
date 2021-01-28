@@ -4,6 +4,8 @@
 ARG PHP_BASE_IMAGE_VERSION
 FROM php:${PHP_BASE_IMAGE_VERSION}
 
+WORKDIR /app
+
 # Install system packages for PHP extensions
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
