@@ -66,25 +66,12 @@ RUN printf "\n" | pecl install \
 # Environment settings
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     PHP_USER_ID=33 \
-    PHP_ENABLE_XDEBUG=0 \
     PATH=/app:/app/vendor/bin:/root/.composer/vendor/bin:$PATH \
-    TERM=linux \
-    VERSION_XDEBUG=2.8.1
+    TERM=linux
 
 # Install node (for asset management with foxy)
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
-
-# Check if Xdebug extension need to be compiled
-RUN cd /tmp && \
-    git clone git://github.com/xdebug/xdebug.git && \
-    cd xdebug && \
-    git checkout ${VERSION_XDEBUG} && \
-    phpize && \
-    ./configure --enable-xdebug && \
-    make && \
-    make install && \
-    rm -rf /tmp/xdebug
 
 # Add configuration files
 COPY image-files/ /

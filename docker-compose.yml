@@ -27,6 +27,9 @@ services:
       - ./_host-volumes/app:/app:delegated
       # Composer cache
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # GIT credentials
+      - ~/.ssh:/root/.ssh:delegated
+      - ~/.gitconfig:/root/.gitconfig:delegated
     networks:
       - appnet
       - dbnet
