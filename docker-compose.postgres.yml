@@ -19,6 +19,14 @@ services:
     networks:
       - dbnet
 
+  php:
+    networks:
+      - dbnet
+
+networks:
+  dbnet:
+    external: false
+
 volumes:
   pgdata:
     external: true

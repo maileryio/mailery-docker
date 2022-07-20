@@ -30,3 +30,11 @@ services:
       appnet:
         aliases:
           - ${WEB_HOST_NAME}
+
+  php:
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    external: true

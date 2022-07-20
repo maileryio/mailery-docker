@@ -13,3 +13,11 @@ services:
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     networks:
       - redisnet
+
+  php:
+    networks:
+      - redisnet
+
+networks:
+  redisnet:
+    external: false

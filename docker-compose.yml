@@ -1,13 +1,5 @@
 version: '2'
 
-networks:
-  appnet:
-    external: true
-  dbnet:
-    external: false
-  redisnet:
-    external: false
-
 services:
   php:
     build:
@@ -30,7 +22,3 @@ services:
       # GIT credentials
       - ~/.ssh:/root/.ssh:delegated
       - ~/.gitconfig:/root/.gitconfig:delegated
-    networks:
-      - appnet
-      - dbnet
-      - redisnet

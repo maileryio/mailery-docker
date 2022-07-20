@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  beanstalkd:
+    build:
+      dockerfile: Dockerfile-${DOCKERFILE_FLAVOUR}
+      context: 'beanstalkd'
+      args:
+        - BEANSTALKD_BASE_IMAGE_VERSION=${BEANSTALKD_BASE_IMAGE_VERSION}
+    image: ${BEANSTALKD_IMAGE_NAME}:${BEANSTALKD_BASE_IMAGE_VERSION}${BEANSTALKD_IMAGE_VERSION_SUFFIX}
+    ports:
+      - "11300:11300"
+    networks:
+      - beanstalkdnet
+
+  php:
+    networks:
+      - beanstalkdnet
+
+networks:
+  beanstalkdnet:
+    external: false

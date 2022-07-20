@@ -1,0 +1,5 @@
+# Redis Docker image for Mailery runtime
+# ==============================================
+
+ARG BEANSTALKD_BASE_IMAGE_VERSION
+FROM schickling/beanstalkd:${BEANSTALKD_BASE_IMAGE_VERSION}
