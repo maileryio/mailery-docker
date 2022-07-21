@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  beanstalkd-console:
+    build:
+      dockerfile: Dockerfile-${DOCKERFILE_FLAVOUR}
+      context: 'beanstalkd-console'
+      args:
+        - BEANSTALKD_CONSOLE_BASE_IMAGE_VERSION=${BEANSTALKD_CONSOLE_BASE_IMAGE_VERSION}
+    image: ${BEANSTALKD_CONSOLE_IMAGE_NAME}:${BEANSTALKD_CONSOLE_BASE_IMAGE_VERSION}${BEANSTALKD_CONSOLE_IMAGE_VERSION_SUFFIX}
+    environment:
+      - AUTH=${BEANSTALKD_CONSOLE_AUTH}
+      - AUTH_USERNAME=${BEANSTALKD_CONSOLE_AUTH_USERNAME}
+      - AUTH_PASSWORD=${BEANSTALKD_CONSOLE_AUTH_PASSWORD}
+    links:
+      - "beanstalkd:beanstalkd"
+    ports:
+      - "2080:2080"
+    networks:
+      - beanstalkdnet
